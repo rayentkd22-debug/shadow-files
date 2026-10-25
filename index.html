@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0c0b10">
+<meta name="apple-mobile-web-app-title" content="ملفات الظل">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>ملفات الظل</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
+<style>
+:root{--ink:#0c0b10;--sm:#17161d;--sm2:#211f29;--paper:#d9cfba;--blood:#8e1626;--brass:#a98a4e;--tx:#e9e4d8;--mut:#8d887c}
+*{box-sizing:border-box;margin:0}
+body{background:var(--ink);color:var(--tx);font-family:'Tajawal',system-ui,sans-serif;min-height:100vh;padding-top:env(safe-area-inset-top);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;background:radial-gradient(60% 40% at 80% 0,#3a0d1566,transparent),radial-gradient(50% 35% at 10% 100%,#2a243a77,transparent);pointer-events:none}
+.wrap{max-width:520px;margin:auto;padding:18px 16px 100px;position:relative}
+h1,h2{font-weight:900}
+h1{font-size:2.4rem;margin:18px 0 6px}
+.stamp{display:inline-block;border:3px solid var(--blood);color:var(--blood);padding:4px 16px;font-weight:900;font-size:1.3rem;transform:rotate(-6deg);border-radius:4px}
+.stamp.a{animation:st .6s ease-out both}
+@keyframes st{from{opacity:0;transform:rotate(-16deg) scale(2.2)}to{opacity:1;transform:rotate(-6deg) scale(1)}}
+@media(prefers-reduced-motion:reduce){.stamp.a{animation:none}}
+.btn{width:100%;padding:14px;border:1px solid var(--brass);background:transparent;color:var(--tx);border-radius:6px;font:700 1rem Tajawal;margin-top:10px}
+.btn.p{background:var(--blood);border-color:var(--blood)}
+.btn.s{width:auto;padding:8px 14px;font-size:.85rem;margin:0 0 10px}
+.card{background:var(--sm);border:1px solid var(--sm2);border-right:4px solid var(--blood);padding:14px;margin:12px 0;border-radius:6px}
+.card.real{border-right-color:var(--brass)}
+.paper{background:var(--paper);color:#241f18;padding:14px;border-radius:3px;margin:10px 0;line-height:1.9}
+.q{display:block;width:100%;text-align:right;background:var(--sm2);color:var(--tx);border:0;padding:12px;margin:6px 0;border-radius:6px;font:500 .95rem Tajawal}
+.q[disabled]{opacity:.4}
+.ans{background:#0007;border-right:3px solid var(--brass);padding:10px;margin:6px 0;border-radius:4px;line-height:1.8}
+.tag{font-size:.78rem;color:var(--brass)}
+.mut{color:var(--mut);line-height:1.8}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#0c0b10f2;border-top:1px solid var(--sm2);padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav button{flex:1;padding:13px 0;background:none;border:0;color:var(--mut);font:700 .74rem Tajawal}
+nav button.on{color:var(--brass)}
+input{width:100%;padding:13px;margin-top:8px;background:var(--sm);border:1px solid var(--sm2);color:var(--tx);border-radius:6px;font:1rem Tajawal}
+#toast{position:fixed;top:calc(14px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:var(--blood);padding:10px 16px;border-radius:6px;z-index:9;display:none;max-width:90%;text-align:center}
+body{-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+textarea,select{width:100%;padding:13px;margin-top:8px;background:var(--sm);border:1px solid var(--sm2);color:var(--tx);border-radius:6px;font:1rem Tajawal}
+.av{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--brass);background:var(--sm2);display:grid;place-items:center;font-weight:900;font-size:1.4rem;color:var(--brass);flex:none}
+.who{display:flex;gap:12px;align-items:center;margin-bottom:6px}
+#mus{position:fixed;top:calc(10px + env(safe-area-inset-top));left:10px;z-index:8;width:38px;height:38px;border-radius:50%;border:1px solid var(--brass);background:#0c0b10cc;font-size:1rem}
+.wrap>*{animation:up .4s ease-out both}.wrap>*:nth-child(2){animation-delay:.05s}.wrap>*:nth-child(3){animation-delay:.1s}.wrap>*:nth-child(n+4){animation-delay:.15s}
+@keyframes up{from{opacity:0;transform:translateY(14px)}}
+@media(prefers-reduced-motion:reduce){.wrap>*{animation:none}}
+#sp{position:fixed;inset:0;z-index:20;background:var(--ink);display:grid;place-items:center;text-align:center;transition:opacity .9s}
+#sp h1{font-size:3rem;animation:fl 2.4s ease-out both}
+@keyframes fl{0%{opacity:0;filter:blur(12px)}40%{opacity:1;filter:blur(0)}55%{opacity:.5}70%{opacity:1}}
+.bar{height:8px;background:var(--sm2);border-radius:4px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blood),var(--brass))}
+.bd{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}.bd div{background:var(--sm);border:1px solid var(--sm2);border-radius:8px;padding:12px 4px;text-align:center;font-size:.78rem;opacity:.35}.bd div.on{opacity:1;border-color:var(--brass);color:var(--brass)}
+.pf{text-align:center}.pf .av{width:96px;height:96px;margin:6px auto;font-size:2.4rem}
+.pf{background:linear-gradient(160deg,#2a0b12,#17161d);border:1px solid var(--brass);border-radius:14px;padding:18px 12px;margin-bottom:14px}
+.stats{display:flex;justify-content:space-around;margin-top:8px;font-size:.8rem}.stats b{display:block;font-size:1.3rem;color:var(--brass)}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div id="sp"><div><span class="stamp a">سرّي</span><h1>ملفات الظل</h1><p class="mut">كل جريمة تترك أثراً</p></div></div>
+<button id="mus" onclick="toggleMus()" aria-label="music">🔊</button>
+<main id="v" class="wrap"></main>
+<nav id="nav" hidden>
+<button data-t="cases" onclick="go('cases')">مستوحاة</button>
+<button data-t="puzzles" onclick="go('puzzles')">ألغاز</button>
+<button data-t="real" onclick="go('real')">ملفات حقيقية</button>
+<button data-t="top" onclick="go('top')">المتصدرون</button>
+<button data-t="me" onclick="go('me')">حسابي</button>
+</nav>
+<script>
+/* ===== الإعدادات: ضع مفاتيح مشروع Supabase الجديد هنا ===== */
+const CFG={url:'https://nytjqbeloqfomkancpya.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im55dGpxYmVsb3Fmb21rYW5jcHlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI4NjE2OTgsImV4cCI6MjEwODQzNzY5OH0.JgxXIAGqcmuNlmjb1mUZuxupR6botSsTXiq4XXOnJ4A',admin:'rayentkd22@gmail.com'};
+
+let DB=false;
+let D=[
+{id:1,k:'tn',tag:'مستوحاة من قضايا حقيقية · بأسماء مبدّلة',t:'قضية الفيلا الزرقاء',
+i:'الساعة 7 الصباح، الحارس لقى سالم بن عمار، رجل أعمال، ميت في مكتبو بفيلا الحمامات. الطبيب الشرعي يقول الوفاة صارت بين 21:30 و22:30 بضربة على الراس بحاجة صلبة.',
+ev:['تقرير الطب الشرعي: ضربة على مؤخرة الراس، الوفاة قبل 22:30.','كاميرا البوابة: سيارة دخلت 21:50 وخرجت 22:40، واللوحة مطموسة.'],
+s:[
+{n:'هدى',r:'الزوجة',q:[
+['وين كنتي ليلة الجريمة؟','كنت عند أختي في نابل. رجعت على 23:15 ولقيت الضو مطفي في المكتب، ما حبيتش نزعجو.',''],
+['كان عندو أعداء؟','خصامو الكبير كان مع منصف على فلوس الشركة. قبل يومين هدّدو قدامي وقالو: "تندم".','منصف هدّد الضحية قبل يومين']]},
+{n:'منصف',r:'الشريك',q:[
+['وين كنت الليلة؟','كنت في تونس العاصمة في اجتماع حتى نص الليل، والله العظيم.',''],
+['شنوة الخلاف اللي بيناتكم؟','خلاف عادي في الشغل، ما يستاهلش نحكيو عليه.',''],
+['لقينا تذكرة أوتوروت الحمامات 21:40 في سيارتك. كيفاش؟','(يسكت) ... عديت نخلص، ما يعني شي. ما دخلتش للفيلا.','تذكرة أوتوروت الحمامات 21:40 في سيارة منصف']]},
+{n:'كمال',r:'السواق',q:[
+['وين كنت؟','في الدار مع عيلتي. الحارس شافني نخرج على 20:00.','كمال غادر 20:00 حسب الحارس']
+,['كان عندك مشكل مع الباترون؟','إي، خصمنا على الأجر. أما نقتلو؟ لا والله، أنا راجل ساكت.','']]}],
+x:1,v:'القاتل منصف. السيارة اللي دخلت 21:50 هي سيارتو، وتذكرة الأوتوروت تكذّب حجة الاجتماع في العاصمة، والتهديد قبل يومين يثبت الدافع. كمال خرج 20:00 وهدى كانت في نابل.'},
+{id:2,k:'pz',tag:'لغز معقّد',t:'الغرفة المغلقة',
+i:'وُجد الأستاذ الجامعي عادل الراشد ميتاً في مكتبه عند الثامنة مساءً. الباب مقفل من الداخل والنافذة مغلقة بإحكام. لا آثار عنف ولا سلاح.',
+ev:['تقرير الطب الشرعي: سمّ بطيء المفعول، تناوله قبل ساعتين إلى ثلاث من الوفاة.','المكتب مقفل من الداخل، وبقايا شاي في الكوب على الطاولة.'],
+s:[
+{n:'سلمى',r:'سكرتيرة القسم',q:[
+['من أحضر المشروبات؟','الدكتور خالد أحضر الشاي الساعة 17:00. أنا لم أدخل المكتب أبداً.','الشاي أحضره خالد الساعة 17:00'],
+['متى رأيتِه آخر مرة؟','قرابة 19:00، كان يتحدث بالهاتف وبحالة جيدة.','']]},
+{n:'يوسف',r:'طالب دراسات عليا',q:[
+['أين كنت مساء ذلك اليوم؟','في المكتبة حتى إغلاقها الساعة 21:00، والكاميرات تثبت ذلك.','يوسف كان في المكتبة وقت الوفاة'],
+['هل بينكما خلاف؟','رسبت في مادته، لكنه وعدني بإعادة التصحيح.','']]},
+{n:'خالد',r:'زميل في القسم',q:[
+['ماذا فعلت عصر ذلك اليوم؟','زرته لنتناقش في بحث مشترك، ولم أبقَ طويلاً.',''],
+['هل أحضرت له شيئاً؟','ربما أحضرت شاياً كعادتي... لكنه بالتأكيد لم يكن مسموماً!',''],
+['ما سبب الخلاف على البحث؟','قال إنه سينشره باسمه وحده. كان ظلماً... لكنني لم أقتله!','دافع خالد: نسب البحث لنفسه']]}],
+x:2,v:'القاتل خالد. السم بطيء المفعول، والشاي الوحيد دخل المكتب بيده الساعة 17:00، فالتوقيت يطابق الوفاة في الثامنة. يوسف كان في المكتبة وسلمى لم تدخل، ودافع خالد هو الخلاف على نسب البحث.'}];
+
+const sb=CFG.url&&window.supabase?supabase.createClient(CFG.url,CFG.key):null;
+const $=s=>document.querySelector(s);
+const L=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+let user=L('u'),S=L('s')||{pts:0,done:[]},tab='cases',C=null,G=null;
+const save=()=>{try{localStorage.setItem('s',JSON.stringify(S));localStorage.setItem('u',JSON.stringify(user))}catch(e){}};
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',2800)}
+function setU(u){user={id:u.id||null,email:u.email||'',name:(u.user_metadata&&u.user_metadata.name)||(u.email||'ضيف').split('@')[0]};save();go('cases');sync();autoJoin()}
+
+async function oauth(p){if(!sb)return toast('أضف مفاتيح Supabase أولاً في أعلى الملف');await sb.auth.signInWithOAuth({provider:p,options:{redirectTo:location.origin}})}
+async function mail(){if(!sb)return toast('أضف مفاتيح Supabase أولاً في أعلى الملف');const e=$('#em').value.trim(),p=$('#pw').value;if(!e||p.length<6)return toast('أدخل إيميلاً صحيحاً وكلمة سر من 6 أحرف');let r=await sb.auth.signInWithPassword({email:e,password:p});if(r.error){r=await sb.auth.signUp({email:e,password:p});if(r.error)return toast(r.error.message)}if(r.data.session)setU(r.data.user);else toast('تفقد إيميلك لتأكيد الحساب')}
+function guest(){setU({email:'',user_metadata:{name:'ضيف'}})}
+function out(){if(sb)sb.auth.signOut();user=null;try{localStorage.removeItem('u')}catch(e){}draw()}
+
+let RF=null,okR=false,W=null,RM=null,CH=null;
+const R=[{id:'r1',t:'سفاح نابل',tag:'ملف حقيقي · وقائع موثّقة',sum:'قضية قتل أطفال هزّت تونس في نهاية الثمانينات.',
+tl:[['1944','ولادة الناصر الدامرجي في تونس العاصمة.',0],['1987 – 1988','الفترة اللي نُسبت فيها الجرائم إليه، والضحايا أطفال. العدد يختلف بين المصادر: 14 عند ويكيبيديا، و13 عند اليوم السابع.',2],['27 نوفمبر 1989','تم القبض عليه.',0],['17 نوفمبر 1990','نُفّذ فيه حكم الإعدام شنقاً في سجن الناظور بتونس. وحسب ويكيبيديا هو آخر من أُعدم في تونس.',0]],
+src:[['ويكيبيديا: Naceur Damergi','https://en.wikipedia.org/wiki/Naceur_Damergi'],['اليوم السابع: غرائب القضايا','https://www.youm7.com/6535813']]}];
+const realFileH=()=>{const f=RF;let h=`<button class="btn s" onclick="go('real')">رجوع</button><span class="stamp">ملف حقيقي</span><h1>${f.t}</h1>`;
+if(!okR)return h+`<div class="paper">هذا الملف يخص جرائم قتل ضد أطفال. نعرضو الوقائع الموثّقة فقط، بدون صور ولا تفاصيل صادمة. للكبار فقط.</div><button class="btn p" onclick="okR=true;draw()">أفهم، تابع</button>`;
+h+=f.tl.map(t=>`<div class="card real"><div class="tag">${t[0]}</div><p style="line-height:1.8">${t[1]}</p></div>`).join('');
+h+='<div class="paper"><b>المصادر:</b><br>'+f.src.map(x=>`<a href="${x[1]}" target="_blank" rel="noopener" style="color:#6b0f1a">${x[0]}</a>`).join('<br>')+'</div>';
+return h+'<p class="mut" style="margin-top:12px">لاحظت خطأ أو تحب تطلب تصحيح أو حذف؟ <a href="mailto:rayentkd22@gmail.com?subject=ShadowFiles%20correction" style="color:var(--brass)">راسل المشرف</a>.</p>'};
+function openR(id){RF=R.find(x=>x.id===id);okR=false;draw();scrollTo(0,0)}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+async function push(){if(!sb||!user||!user.id)return;try{await sb.from('profiles').upsert({id:user.id,name:user.name,avatar:user.img||null,pts:S.pts,done:S.done,updated_at:new Date().toISOString()})}catch(e){}}
+async function sync(){if(!sb||!user||!user.id)return;try{const{data}=await sb.from('profiles').select('name,avatar,pts,done').eq('id',user.id).maybeSingle();if(data){if(data.name)user.name=data.name;if(data.avatar)user.img=data.avatar;S.pts=Math.max(S.pts,data.pts);S.done=[...new Set([...S.done,...data.done])]}save();await push();if(tab==='me'||tab==='cases')draw()}catch(e){}}
+async function loadTop(){let h='';if(!sb||!user.id){h='<p class="mut">سجّل الدخول بحساب حقيقي (Google أو إيميل) باش تظهر في الترتيب.</p>'}else{try{const{data,error}=await sb.from('profiles').select('name,pts,avatar').order('pts',{ascending:false}).limit(20);if(error)throw error;h=data.length?data.map((r,i)=>`<div class="card"><div class="who">${av({n:r.name,img:r.avatar})}<div><b>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${esc(r.name)}</b><div class="tag">${rank(r.pts)} · ${r.pts} نقطة</div></div></div></div>`).join(''):'<p class="mut">ما فمّا حتى لاعب بعد.</p>'}catch(e){h='<p class="mut">تعذّر تحميل الترتيب.</p>'}}const el=$('#tb');if(el&&tab==='top')el.innerHTML=h}
+function go(t){if(CH){sb.removeChannel(CH);CH=null}RM=null;tab=t||tab;C=null;G=null;RF=null;okR=false;W=null;draw();scrollTo(0,0)}
+function open_(id){const c0=D.find(c=>c.id===id);if(locked(c0))return toast('الملف مقفل');const fl=S.fl&&S.fl[id];if(fl&&Date.now()-fl<36e5)return toast('الملف مقفل بعد الفشل. ارجع بعد '+Math.ceil((36e5-(Date.now()-fl))/6e4)+' دقيقة');C=c0;G={clues:[],asked:{},log:{},wrong:0,res:null,stage:0,sel:[],fail:false};draw();scrollTo(0,0)}
+function ask(si,qi){const k=si+'-'+qi;if(G.asked[k])return;G.asked[k]=1;const q=C.s[si].q[qi];(G.log[si]=G.log[si]||[]).push([q[0],q[1]]);if(q[2]&&!G.clues.includes(q[2]))G.clues.push(q[2]);draw()}
+const maxA=()=>Math.max(2,Math.ceil(C.s.length/2));
+function bad(){G.wrong++;if(G.wrong>=maxA()){G.fail=true;S.fl=S.fl||{};S.fl[C.id]=Date.now();save()}else toast('رفضت المحكمة الاتهام. باقيلك '+(maxA()-G.wrong)+' محاولة')}
+function win(){let p=Math.max(10,50+G.clues.length*25-G.wrong*10)+((C.acc||[]).length?30:0);if(S.done.includes(C.id))p=0;else S.done.push(C.id);S.pts+=p;save();push();G.res=p}
+function accuse(si){if(G.fail)return;if(si===C.x&&(C.key||[]).every(k=>G.clues.includes(k))){if((C.acc||[]).length){G.stage=1;G.sel=[]}else win()}else bad();draw()}
+function selA(i){const k=G.sel.indexOf(i);k<0?G.sel.push(i):G.sel.splice(k,1);draw()}
+function confA(){[...G.sel].sort().join()===[...C.acc].sort().join()?win():bad();if(G.fail)G.stage=0;draw()}
+
+const rank=p=>p<50?'متدرب':p<200?'محقق':p<400?'مفتش':'رئيس الفرقة';
+const locked=c=>c.sec&&!D.filter(x=>!x.sec).every(x=>S.done.includes(x.id));
+const list=k=>D.filter(c=>c.k===k).map(c=>`<div class="card"><div class="tag">${locked(c)?'ملف سري':c.tag}</div><h2>${locked(c)?'████████':esc(c.t)}</h2><p class="mut" style="margin:6px 0">${locked(c)?'':esc(c.i.slice(0,75))+'...'}</p>${locked(c)?'<p class="mut">🔒 ينفتح بعد حل كل القضايا العادية</p>':`<button class="btn" onclick="open_(${c.id})">${S.done.includes(c.id)?'أعد التحقيق':'افتح الملف'}</button>`}</div>`).join('');
+
+function authH(){return `<span class="stamp a">سرّي</span><h1>ملفات الظل</h1><p class="mut">اقرأ الملف، استجوب المشتبهين، واكشف القاتل قبل ما يضيع الدليل.</p>
+<button class="btn p" onclick="oauth('google')">الدخول بـ Google</button>
+<button class="btn" onclick="oauth('facebook')">الدخول بـ Facebook</button>
+<input id="em" type="email" placeholder="الإيميل" autocomplete="email"><input id="pw" type="password" placeholder="كلمة السر" autocomplete="current-password">
+<button class="btn" onclick="mail()">دخول / حساب جديد بالإيميل</button>
+<button class="btn" style="border-color:var(--sm2);color:var(--mut)" onclick="guest()">ادخل كضيف</button>`}
+const hero=k=>{const a=D.filter(c=>c.k===k&&!c.sec),n=a.filter(c=>S.done.includes(c.id)).length;return `<div class="card real"><b>${n} من ${a.length} محلولة</b><div class="bar"><i style="width:${a.length?Math.round(n/a.length*100):0}%"></i></div><p class="mut">الاتهام يحتاج أدلة، وكل خطأ يضيّع محاولة. حل القضايا كلها باش تنفتح الملفات السرية.</p><button class="btn" onclick="go('co')">👥 العب مع صحابك</button></div>`};
+const casesH=()=>`<h1>قضايا مستوحاة</h1><p class="mut">أجواء تونسية وشخصيات مبدّلة. استجواب كامل بالدارجة.</p>${hero('tn')}${list('tn')}<div class="card"><p class="mut">ملفات جديدة تتزاد قريباً…</p></div>`;
+const puzH=()=>`<h1>ألغاز معقّدة</h1><p class="mut">قضايا أصلية بعربية يفهمها كل العرب، وأدلتها متشابكة.</p>${hero('pz')}${list('pz')}<div class="card"><p class="mut">ألغاز جديدة تتزاد قريباً…</p></div>`;
+const realH=()=>`<h1>ملفات حقيقية</h1><p class="mut">وقائع موثّقة فقط مع المصدر، وبدون صور ضحايا. التحقيق التفاعلي والاستجواب في القضايا المستوحاة.</p>${R.map(x=>`<div class="card real"><div class="tag">${x.tag}</div><h2>${x.t}</h2><p class="mut" style="margin:6px 0">${x.sum}</p><button class="btn" onclick="openR('${x.id}')">افتح الملف</button></div>`).join('')}`;
+const topH=()=>{loadTop();return '<h1>المتصدرون</h1><div id="tb"><p class="mut">جاري التحميل...</p></div>'};
+const RK=[[0,'متدرب'],[50,'محقق'],[200,'مفتش'],[400,'رئيس الفرقة']];
+const BD=[['أول خيط',()=>S.done.length>=1],['محقق',()=>S.pts>=50],['مفتش',()=>S.pts>=200],['حلّال القضايا',()=>S.done.length>0&&D.filter(c=>!c.sec).every(c=>S.done.includes(c.id))],['3 أيام',()=>(S.st||0)>=3],['أسبوع كامل',()=>(S.st||0)>=7]];
+const meH=()=>{const i=RK.filter(x=>S.pts>=x[0]).length-1,nx=RK[i+1],pc=nx?Math.round((S.pts-RK[i][0])/(nx[0]-RK[i][0])*100):100;return `<div class="pf"><label>${av({n:user.name,img:user.img})}<input type="file" accept="image/*" hidden onchange="pickMe(this)"></label><h1 style="margin:4px 0">${esc(user.name)}</h1><div class="tag">${RK[i][1]} · ${S.pts} نقطة</div><div class="bar"><i style="width:${pc}%"></i></div><p class="mut">${nx?'باقي '+(nx[0]-S.pts)+' نقطة لرتبة '+nx[1]:'وصلت لأعلى رتبة'}</p><div class="stats"><div><b>${S.pts}</b>نقطة</div><div><b>${S.done.length}</b>قضية</div><div><b>${S.st||1}</b>🔥 يوم</div></div></div><input id="nm" value="${esc(user.name)}" maxlength="20"><button class="btn s" style="margin-top:8px" onclick="saveName()">حفظ الاسم</button> ${user.img?'<button class="btn s" onclick="user.img=\'\';save();push();draw()">حذف الصورة</button>':''}<h2>الشارات</h2><div class="bd">${BD.map(b=>`<div class="${b[1]()?'on':''}">${b[0]}</div>`).join('')}</div>${user.email===CFG.admin?'<button class="btn p" onclick="go(\'admin\')">لوحة المشرف</button>':''}<button class="btn" onclick="out()">خروج</button>`};
+
+function caseH(){
+let h=`<button class="btn s" onclick="go()">رجوع</button><span class="stamp">${C.k==='tn'?'ملف سرّي':'لغز'}</span><h1>${C.t}</h1><div class="paper">${C.i}</div><div class="paper"><b>الأدلة:</b><br>${C.ev.map(e=>'• '+e).join('<br>')}</div>`;
+if(G.res!==null){return h+`<div class="card real"><h2>تم حل القضية</h2><p class="mut" style="margin:8px 0">${C.v}</p><b>${G.res?'+'+G.res+' نقطة':'سبق حلها، بدون نقاط جديدة'}</b></div><button class="btn p" onclick="go()">قضية أخرى</button>`}
+h+='<h2 style="margin-top:18px">الاستجواب</h2>';
+C.s.forEach((p,si)=>{h+=`<div class="card"><div class="who">${av(p)}<div><b>${esc(p.n)}</b><div class="tag">${esc(p.r)}</div></div></div>`+(G.log[si]||[]).map(a=>`<div class="ans"><div class="tag">${a[0]}</div>${a[1]}</div>`).join('')+p.q.map((q,qi)=>G.asked[si+'-'+qi]?'':`<button class="q" onclick="ask(${si},${qi})">${q[0]}</button>`).join('')+'</div>'});
+h+=`<div class="paper"><b>الخيوط (${G.clues.length}):</b><br>${G.clues.length?G.clues.map(c=>'• '+c).join('<br>'):'ما لقيت شي لحد الآن'}</div><h2 style="margin-top:18px">اتهم القاتل</h2>`;
+if(G.fail)return h+'<div class="card"><h2>فشل التحقيق</h2><p class="mut">المحكمة رفضت الاتهام. تنجم تعاود بعد ساعة.</p></div><button class="btn" onclick="go()">رجوع</button>';
+if(G.stage===1){h+='<p class="mut">القاتل صحيح ✅ شكون ساعدو؟ اختار المتواطئين:</p>';C.s.forEach((p,si)=>{if(si!==C.x)h+=`<button class="btn" style="${G.sel.includes(si)?'background:var(--blood)':''}" onclick="selA(${si})">${esc(p.n)} (${esc(p.r)})</button>`});h+='<button class="btn p" onclick="confA()">تأكيد</button>'}else{h+=`<p class="mut">محاولات الاتهام الباقية: ${maxA()-G.wrong}. الاتهام يحتاج أدلة، موش تخمين.</p>`;C.s.forEach((p,si)=>{h+=`<button class="btn" onclick="accuse(${si})">${esc(p.n)} (${esc(p.r)})</button>`})}
+return h}
+
+function draw(){const v=$('#v'),n=$('#nav');if(!user){n.hidden=true;v.innerHTML=authH();return}
+n.hidden=false;[...n.children].forEach(b=>b.classList.toggle('on',b.dataset.t===(tab==='admin'?'me':tab)));
+v.innerHTML=RM?coH():W?editH():RF?realFileH():C?caseH():({cases:casesH,puzzles:puzH,real:realH,top:topH,me:meH,admin:admH,co:lobH}[tab])();if(tab==='admin'&&!W&&!C&&!RF)loadStats();if(RM)coFill()}
+
+const av=p=>p.img?`<img class="av" src="${p.img}" alt="">`:`<div class="av">${esc((p.n||'?')[0])}</div>`;
+const inp=(v,oc,ph)=>`<input value="${esc(v||'')}" oninput="${oc}" placeholder="${ph}">`;
+const ta=(v,oc,ph,n)=>`<textarea rows="${n||3}" oninput="${oc}" placeholder="${ph}">${esc(v||'')}</textarea>`;
+const admH=()=>user.email!==CFG.admin?'<p class="mut">غير مسموح.</p>':`<button class="btn s" onclick="go('me')">رجوع</button><h1>لوحة المشرف</h1><div id="st" class="paper">جاري تحميل الإحصائيات...</div><button class="btn p" onclick="newCase()">+ قضية جديدة</button><button class="btn" onclick="seedNew()">استيراد قضايا جديدة من الملف</button>${DB?'':'<button class="btn" onclick="seed()">استيراد القضايا الحالية للقاعدة (مرة وحدة)</button>'}${D.map(c=>`<div class="card"><div class="tag">${c.k==='tn'?'مستوحاة':'لغز'}</div><b>${esc(c.t)}</b><div style="display:flex;gap:8px;margin-top:8px"><button class="btn s" onclick="editCase(${c.id})">تعديل</button><button class="btn s" onclick="delCase(${c.id})">حذف</button></div></div>`).join('')}`;
+const editH=()=>{let h=`<button class="btn s" onclick="go('admin')">إلغاء</button><h1>تعديل القضية</h1><select onchange="W.k=this.value"><option value="tn"${W.k==='tn'?' selected':''}>مستوحاة (دارجة)</option><option value="pz"${W.k==='pz'?' selected':''}>لغز معقّد</option></select><label class="mut" style="display:block;margin-top:8px"><input type="checkbox"${W.sec?' checked':''} onchange="W.sec=this.checked" style="width:auto;margin-inline-end:6px"> ملف سري (ينفتح بعد حل القضايا العادية)</label>`+inp(W.tag,'W.tag=this.value','التصنيف')+inp(W.t,'W.t=this.value','عنوان القضية')+ta(W.i,'W.i=this.value','نص القضية',4)+ta((W.ev||[]).join('\n'),"W.ev=this.value.split('\\n').filter(Boolean)",'الأدلة (دليل في كل سطر)',4);
+W.s.forEach((p,i)=>{h+=`<div class="card"><div class="who"><label>${av(p)}<input type="file" accept="image/*" hidden onchange="pick(${i},this)"></label><div style="flex:1">`+inp(p.n,`W.s[${i}].n=this.value`,'الاسم')+inp(p.r,`W.s[${i}].r=this.value`,'الصفة (زوجة، شريك...)')+`</div></div>`+(p.img?`<button class="btn s" onclick="W.s[${i}].img='';draw()">حذف الصورة</button>`:'')+p.q.map((q,j)=>`<div class="paper" style="padding:8px">`+inp(q[0],`W.s[${i}].q[${j}][0]=this.value`,'السؤال')+ta(q[1],`W.s[${i}].q[${j}][1]=this.value`,'الجواب',2)+inp(q[2],`W.s[${i}].q[${j}][2]=this.value`,'الخيط اللي يكتشفو (اختياري)')+`<button class="btn s" onclick="delQ(${i},${j})">حذف السؤال</button></div>`).join('')+`<button class="btn s" onclick="addQ(${i})">+ سؤال</button> <button class="btn s" onclick="delS(${i})">حذف المشتبه</button></div>`});
+return h+`<button class="btn" onclick="addS()">+ مشتبه</button><h2 style="margin-top:14px">القاتل</h2><select onchange="W.x=+this.value">`+W.s.map((p,i)=>`<option value="${i}"${W.x===i?' selected':''}>${esc(p.n||'مشتبه '+(i+1))}</option>`).join('')+`</select>`+proofH()+ta(W.v,'W.v=this.value','تفسير الحل (يظهر بعد النجاح)',4)+`<button class="btn p" onclick="saveCase()">حفظ القضية</button>`};
+const newS=()=>({n:'',r:'',img:'',q:[['','','']]});
+function newCase(){W={id:Math.floor(Date.now()/1000),k:'tn',tag:'',t:'',i:'',ev:[],s:[newS()],x:0,v:''};draw();scrollTo(0,0)}
+function editCase(id){W=JSON.parse(JSON.stringify(D.find(c=>c.id===id)));draw();scrollTo(0,0)}
+function addS(){W.s.push(newS());draw()}
+function delS(i){W.s.splice(i,1);W.acc=(W.acc||[]).filter(x=>x!==i).map(x=>x>i?x-1:x);if(W.x>=W.s.length)W.x=0;draw()}
+function addQ(i){W.s[i].q.push(['','','']);draw()}
+function delQ(i,j){W.s[i].q.splice(j,1);draw()}
+function pick(i,inp){const f=inp.files[0];if(!f)return;const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),m=Math.min(im.width,im.height);c.width=c.height=320;c.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,320,320);W.s[i].img=c.toDataURL('image/jpeg',.75);URL.revokeObjectURL(im.src);draw()};im.src=URL.createObjectURL(f)}
+async function loadCases(){if(!sb)return;try{const{data,error}=await sb.from('cases').select('id,data').order('sort');if(error)throw error;DB=data.length>0;if(DB)D=data.map(r=>({...r.data,id:r.id}))}catch(e){}}
+async function saveCase(){if(!sb||!W.t.trim())return toast('أضف عنواناً أولاً');const{id,...rest}=W;const{error}=await sb.from('cases').upsert({id,data:rest,sort:id,updated_at:new Date().toISOString()});if(error)return toast('خطأ: '+error.message);toast('تم الحفظ ✅');await loadCases();go('admin')}
+async function delCase(id){if(!DB)return toast('استورد القضايا للقاعدة أولاً');if(!confirm('حذف هذه القضية نهائياً؟'))return;const{error}=await sb.from('cases').delete().eq('id',id);if(error)return toast('خطأ: '+error.message);await loadCases();draw()}
+async function seedNew(){if(!sb)return;try{if(!DB)await seed();const rows=await (await fetch('new-cases.json?'+Date.now())).json();const{error}=await sb.from('cases').upsert(rows.map(({id,...d})=>({id,data:d,sort:id})));if(error)throw error;await loadCases();draw();toast('تمت إضافة '+rows.length+' قضايا ✅')}catch(e){toast('خطأ: '+(e.message||e))}}
+async function seed(){if(!sb)return;const{error}=await sb.from('cases').upsert(D.map(({id,...d})=>({id,data:d,sort:id})));if(error)return toast('خطأ: '+error.message);await loadCases();draw();toast('تم الاستيراد ✅')}
+const sameSet=(a,b)=>[...a].sort().join()===[...b].sort().join();
+const lobH=()=>!sb||!user.id?'<h1>العب مع صحابك</h1><p class="mut">سجّل الدخول بحساب Google أو إيميل باش تستعمل الغرف.</p>':`<h1>العب مع صحابك</h1><p class="mut">اعمل غرفة وابعث الكود. الكل يستجوب مع بعضو ويتحاور في الشات (حتى 4 لاعبين).</p><select id="rc">${D.filter(c=>!locked(c)).map(c=>`<option value="${c.id}">${esc(c.t)}</option>`).join('')}</select><button class="btn p" onclick="mkRoom()">اعمل غرفة</button><input id="rj" placeholder="كود الغرفة" maxlength="6"><button class="btn" onclick="joinCode($('#rj').value)">ادخل بالكود</button>`;
+const coH=()=>`<button class="btn s" onclick="go('cases')">خروج من الغرفة</button><h1>غرفة ${RM.code}</h1><p class="mut">الكود: <b>${RM.code}</b> · <a style="color:var(--brass)" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('تعال نحلّو قضية مع بعضنا في ملفات الظل: '+location.origin+'/?room='+RM.code)}">ابعث الدعوة على واتساب</a></p><p id="cm" class="mut"></p><div id="cq"></div><h2>الشات</h2><div id="cmsgs" class="paper" style="max-height:220px;overflow:auto"></div><input id="cin" placeholder="اكتب رسالة..." onkeydown="if(event.key==='Enter')sendC()"><button class="btn s" style="margin-top:8px" onclick="sendC()">إرسال</button>`;
+function calc(){C=D.find(c=>c.id===RM.case);G={clues:[],asked:{},log:{},wrong:0,res:null,fail:false};for(const e of RM.ev){if(e.kind==='ask'){const{si,qi}=e.data,k=si+'-'+qi,q=C.s[si]&&C.s[si].q[qi];if(!q||G.asked[k])continue;G.asked[k]=1;(G.log[si]=G.log[si]||[]).push([q[0],q[1],e.name]);if(q[2]&&!G.clues.includes(q[2]))G.clues.push(q[2])}else if(e.kind==='acc'&&G.res===null&&!G.fail){const a=e.data;if(a.si===C.x&&(C.key||[]).every(k=>G.clues.includes(k))&&sameSet(a.acc||[],C.acc||[]))G.res=Math.max(10,50+G.clues.length*25-G.wrong*10)+((C.acc||[]).length?30:0);else{G.wrong++;if(G.wrong>=maxA())G.fail=true}}}if(G.res!==null&&!S.done.includes(C.id)){S.done.push(C.id);S.pts+=G.res;save();push()}}
+function coFill(){if(!RM||!$('#cq'))return;calc();$('#cm').textContent='اللاعبون: '+RM.mem.map(m=>m.name).join('، ');let h=`<div class="paper">${esc(C.i)}</div><div class="paper"><b>الأدلة:</b><br>${C.ev.map(e=>'• '+esc(e)).join('<br>')}</div>`;
+if(G.res!==null)h+=`<div class="card real"><h2>تم حل القضية 🎉</h2><p class="mut">${esc(C.v)}</p><b>+${G.res} نقطة لكل لاعب</b></div>`;else if(G.fail)h+='<div class="card"><h2>فشل التحقيق</h2><p class="mut">رفضت المحكمة الاتهامات.</p></div>';
+C.s.forEach((p,si)=>{h+=`<div class="card"><div class="who">${av(p)}<div><b>${esc(p.n)}</b><div class="tag">${esc(p.r)}</div></div></div>`+(G.log[si]||[]).map(a=>`<div class="ans"><div class="tag">${esc(a[2])}: ${esc(a[0])}</div>${esc(a[1])}</div>`).join('')+p.q.map((q,qi)=>G.asked[si+'-'+qi]?'':`<button class="q" onclick="askCo(${si},${qi})">${esc(q[0])}</button>`).join('')+'</div>'});
+h+=`<div class="paper"><b>الخيوط (${G.clues.length}):</b><br>${G.clues.map(c=>'• '+esc(c)).join('<br>')||'—'}</div>`;
+if(G.res===null&&!G.fail){const b=(on,f,t)=>`<button class="btn" style="${on?'background:var(--blood)':''}" onclick="${f}">${esc(t)}</button>`;h+=`<h2>اتهام جماعي</h2><p class="mut">المحاولات الباقية: ${maxA()-G.wrong}</p>`+C.s.map((p,si)=>b(RM.pick===si,`RM.pick=${si};coFill()`,p.n)).join('');if((C.acc||[]).length)h+='<p class="mut">المتواطئون:</p>'+C.s.map((p,si)=>b(RM.sel.includes(si),`togA(${si})`,p.n)).join('');h+='<button class="btn p" onclick="accCo()">أرسل الاتهام للمحكمة</button>'}
+$('#cq').innerHTML=h;const m=$('#cmsgs');m.innerHTML=RM.ev.filter(e=>e.kind==='chat').map(e=>`<div><b>${esc(e.name)}:</b> ${esc(e.data.t)}</div>`).join('')||'ما فمّاش رسائل بعد';m.scrollTop=m.scrollHeight}
+function addEv(e){if(!RM||RM.ev.some(x=>x.id===e.id))return;RM.ev.push(e);coFill()}
+function sendEv(kind,data){return sb.from('events').insert({room_id:RM.id,user_id:user.id,name:user.name,kind,data}).select().single().then(({data:d,error})=>{if(error)toast('خطأ: '+error.message);else addEv(d)})}
+function askCo(si,qi){if(!G.asked[si+'-'+qi])sendEv('ask',{si,qi})}
+function sendC(){const i=$('#cin'),t=i.value.trim().slice(0,300);if(!t)return;i.value='';sendEv('chat',{t})}
+function togA(i){const k=RM.sel.indexOf(i);k<0?RM.sel.push(i):RM.sel.splice(k,1);coFill()}
+function accCo(){if(RM.pick<0)return toast('اختار القاتل أولاً');sendEv('acc',{si:RM.pick,acc:RM.sel})}
+async function enterRoom(r){const[a,b]=await Promise.all([sb.from('events').select('*').eq('room_id',r.id).order('id'),sb.from('members').select('user_id,name').eq('room_id',r.id)]);RM={id:r.id,code:r.code,case:r.case_id,ev:a.data||[],mem:b.data||[],pick:-1,sel:[]};CH=sb.channel('r'+r.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'events',filter:'room_id=eq.'+r.id},p=>addEv(p.new)).on('postgres_changes',{event:'INSERT',schema:'public',table:'members',filter:'room_id=eq.'+r.id},p=>{if(RM&&!RM.mem.some(m=>m.user_id===p.new.user_id)){RM.mem.push(p.new);coFill()}}).subscribe();tab='co';draw()}
+async function mkRoom(){const code=Math.random().toString(36).slice(2,7).toUpperCase();const{data:r,error}=await sb.from('rooms').insert({code,case_id:+$('#rc').value,host:user.id}).select().single();if(error)return toast('خطأ: '+error.message);await sb.from('members').insert({room_id:r.id,user_id:user.id,name:user.name});enterRoom(r)}
+async function joinCode(c){c=(c||'').trim().toUpperCase();if(!c)return;const{data:r}=await sb.from('rooms').select('*').eq('code',c).maybeSingle();if(!r)return toast('الكود غلط');const{data:m}=await sb.from('members').select('user_id').eq('room_id',r.id);if(m&&m.length>=4&&!m.some(x=>x.user_id===user.id))return toast('الغرفة مليانة');await sb.from('members').upsert({room_id:r.id,user_id:user.id,name:user.name},{onConflict:'room_id,user_id',ignoreDuplicates:true});enterRoom(r)}
+function autoJoin(){const c=new URLSearchParams(location.search).get('room');if(c&&sb&&user&&user.id){history.replaceState(null,'',location.pathname);joinCode(c)}}
+let AC2=[];
+function proofH(){AC2=[...new Set(W.s.flatMap(p=>p.q.map(q=>q[2]).filter(Boolean)))];W.key=W.key||[];W.acc=W.acc||[];const lb=(c,on,f)=>`<label class="mut" style="display:block;padding:5px 0"><input type="checkbox" style="width:auto;margin-inline-end:6px"${on?' checked':''} onchange="${f}(this.checked)">${c}</label>`;return '<h2 style="margin-top:14px">الخيوط المطلوبة لإثبات التهمة</h2>'+(AC2.map((c,i)=>lb(esc(c),W.key.includes(c),'tk('+i+',')).join('')||'<p class="mut">أضف خيوطاً في الأسئلة أولاً</p>')+'<h2 style="margin-top:14px">المتواطئون مع القاتل</h2>'+W.s.map((p,i)=>i===W.x?'':lb(esc(p.n||'مشتبه '+(i+1)),W.acc.includes(i),'tgA('+i+',')).join('')}
+function tk(i,on){const c=AC2[i];W.key=W.key.filter(x=>x!==c);if(on)W.key.push(c)}
+function tgA(i,on){W.acc=W.acc.filter(x=>x!==i);if(on)W.acc.push(i)}
+function pickMe(inp){const f=inp.files[0];if(!f)return;const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),m=Math.min(im.width,im.height);c.width=c.height=128;c.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,128,128);user.img=c.toDataURL('image/jpeg',.7);URL.revokeObjectURL(im.src);save();push();draw()};im.src=URL.createObjectURL(f)}
+function saveName(){const n=$('#nm').value.trim().slice(0,20);if(!n)return toast('اكتب اسماً');user.name=n;save();push();draw();toast('تم حفظ الاسم ✅')}
+async function loadStats(){const el=$('#st');if(!el||!sb)return;try{const d0=new Date();d0.setHours(0,0,0,0);const q=f=>f(sb.from('profiles').select('id',{count:'exact',head:true}));const[a,b,c,l]=await Promise.all([q(x=>x),q(x=>x.gte('updated_at',d0.toISOString())),q(x=>x.gt('pts',0)),sb.from('profiles').select('name,pts,updated_at').order('updated_at',{ascending:false}).limit(30)]);el.innerHTML=`<b>الحسابات:</b> ${a.count}<br><b>نشطين اليوم:</b> ${b.count}<br><b>لعبوا (عندهم نقاط):</b> ${c.count}<hr>`+l.data.map(r=>`${esc(r.name)} · ${r.pts} نقطة · ${new Date(r.updated_at).toLocaleDateString('ar-TN')}`).join('<br>')}catch(e){el.textContent='تعذّر تحميل الإحصائيات. شغّل كود SQL الجديد.'}}
+let AC=null;
+function startMusic(){if(AC)return;AC=new(window.AudioContext||window.webkitAudioContext)();const m=AC.createGain();m.gain.setValueAtTime(0,AC.currentTime);m.gain.linearRampToValueAtTime(.2,AC.currentTime+5);m.connect(AC.destination);const lp=AC.createBiquadFilter();lp.frequency.value=380;lp.connect(m);[55,82.4,110.5].forEach(f=>{const o=AC.createOscillator(),g=AC.createGain();o.type='sawtooth';o.frequency.value=f;g.gain.value=.22;o.connect(g);g.connect(lp);o.start()});const lf=AC.createOscillator(),lg=AC.createGain();lf.frequency.value=.07;lg.gain.value=170;lf.connect(lg);lg.connect(lp.frequency);lf.start();const n=AC.sampleRate*3,b=AC.createBuffer(2,n,AC.sampleRate);for(let c=0;c<2;c++){const d=b.getChannelData(c);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.5)}const cv=AC.createConvolver();cv.buffer=b;cv.connect(m);const sc=[220,261.6,293.7,329.6,392,415.3];(function note(){const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=sc[Math.floor(Math.random()*6)]*(Math.random()<.3?2:1);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.14,t+.05);g.gain.exponentialRampToValueAtTime(.0005,t+3.5);o.connect(g);g.connect(cv);o.start(t);o.stop(t+4);setTimeout(note,2500+Math.random()*4500)})()}
+function toggleMus(){const b=$('#mus');if(!AC||AC.state!=='running'){startMusic();AC.resume();localStorage.mu='1';b.textContent='🔊'}else{AC.suspend();localStorage.mu='0';b.textContent='🔇'}}
+document.addEventListener('pointerdown',()=>{if(localStorage.mu!=='0'&&!AC){startMusic();AC.resume()}},{once:true});
+if(localStorage.mu==='0')$('#mus').textContent='🔇';
+document.addEventListener('visibilitychange',()=>{if(AC)document.hidden?AC.suspend():localStorage.mu!=='0'&&AC.resume()});
+if(sb){sb.auth.getSession().then(({data})=>{if(data.session)setU(data.session.user);else draw()});sb.auth.onAuthStateChange((e,s)=>{if(s&&!user)setU(s.user)})}else draw();
+if(sb)loadCases().then(()=>{if(!W)draw()});
+try{if(sessionStorage.getItem('sp'))$('#sp').remove();else{sessionStorage.setItem('sp','1');setTimeout(()=>{$('#sp').style.opacity=0;setTimeout(()=>$('#sp').remove(),900)},2300)}}catch(e){$('#sp').remove()}
+(function(){const f=d=>d.toISOString().slice(0,10),t=new Date(),y=new Date(t-864e5);if(S.last!==f(t)){S.st=S.last===f(y)?(S.st||0)+1:1;S.last=f(t);save()}})();
+</script>
+</body>
+</html>
